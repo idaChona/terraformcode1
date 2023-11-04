@@ -1,7 +1,18 @@
-resource "aws_lightsail_instance" "CentoS" {
-  name              = "Centos_rpm"
-  availability_zone = "us-east-1"
-  blueprint_id      = "amazon_linux_2"
-  bundle_id         = "nano_1_0"
-  user_data         = "sudo yum install -y httpd && sudo systemctl start httpd && sudo systemctl enable httpd && echo '<h1>Deployed via Terraform</h1>' | sudo tee /var/www/html/index.html"
+resource "aws_lightsail_instance" "web_server" {
+  name                  = "my-lightsail-server"
+  availability_zone     = "us-east-1a" # Change to your desired availability zone
+  instance_type         = "nano_2_0"
+  blueprint_id          = "amazon_linux_2"
+
+  user_data = <<-EOF
+#!/bin/bash
+sudo yum install httpd -y
+sudo systemctl start httpd
+sudo systemctl enable httpd
+echo "<h1>This Server is created using Terraform</h1>" | sudo tee /var/www/html/index.html
+EOF
+}
+
+output "public_ip" {
+  value = aws_lightsail_instance.web_server.public_ip_address
 }
